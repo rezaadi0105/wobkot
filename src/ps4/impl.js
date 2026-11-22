@@ -192,6 +192,8 @@ async function load_bin() {
   logger.info(`bin returned ${ret} !!`);
 
   mem.free(pthread_addr_addr);
+
+  logger.info('Payload Loaded !!');
 }
 
 const impl_map = {

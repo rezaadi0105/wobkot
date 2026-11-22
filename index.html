@@ -1,29 +1,173 @@
-<!doctype html>
-<html>
-  <head>
-    <style>
-      html,
-      body {
-        height: 100%;
-        margin: 0;
-      }
-      #console {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 20px;
-        font-size: 12px;
-        overflow: auto;
-        box-sizing: border-box;
-        font-family: 'Lucida Console', 'Courier New', 'Menlo';
-        background-color: #131416;
-        color: #c1c2c5;
-      }
-    </style>
-    <script src="src/main.js" defer></script>
-    <title>Wobkot</title>
-  </head>
-  <body>
-    <pre id="console"></pre>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080d18">
+  <meta name="description" content="Wobkot PS4 exploit host dashboard">
+  <title>Wobkot | PS4 Exploit Host</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080d18;
+      --panel: rgba(17, 26, 43, .82);
+      --panel-2: #0c1423;
+      --line: rgba(148, 163, 184, .15);
+      --muted: #8290a8;
+      --text: #e8eef9;
+      --cyan: #42e8e0;
+      --blue: #638bff;
+      --green: #63e6a5;
+    }
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; }
+    body {
+      min-height: 100vh;
+      padding: 32px 22px;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 15% 0%, rgba(49, 108, 190, .22), transparent 42%),
+        radial-gradient(ellipse at 100% 15%, rgba(34, 211, 196, .12), transparent 35%),
+        var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .shell { width: min(1120px, 100%); margin: 0 auto; }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 18px; margin-bottom: 30px;
+    }
+    .brand { display: flex; align-items: center; gap: 13px; min-width: 0; }
+    .brand-mark {
+      width: 44px; height: 44px; display: grid; place-items: center;
+      border: 1px solid rgba(66, 232, 224, .35); border-radius: 14px;
+      color: var(--cyan); background: rgba(66, 232, 224, .09);
+      box-shadow: 0 0 28px rgba(66, 232, 224, .10);
+      font-size: 21px; font-weight: 800;
+    }
+    .brand-name { margin: 0; font-size: 16px; font-weight: 750; letter-spacing: .08em; }
+    .brand-sub { margin: 4px 0 0; color: var(--muted); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+    .top-status {
+      display: inline-flex; align-items: center; gap: 9px; padding: 9px 13px;
+      border: 1px solid var(--line); border-radius: 999px; color: #b8c5d9;
+      background: rgba(15, 23, 42, .62); font-size: 12px;
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 12px var(--green); }
+    .hero { margin: 0 0 24px; }
+    .eyebrow { color: var(--cyan); font-size: 11px; font-weight: 750; letter-spacing: .2em; text-transform: uppercase; }
+    h1 { margin: 10px 0 9px; font-size: clamp(28px, 5vw, 46px); line-height: 1.08; letter-spacing: -.045em; }
+    h1 span { color: var(--cyan); }
+    .intro { max-width: 650px; margin: 0; color: #93a1b8; font-size: 14px; line-height: 1.7; }
+    .meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; margin: 26px 0 18px; }
+    .meta-card {
+      padding: 16px 18px; border: 1px solid var(--line); border-radius: 15px;
+      background: var(--panel); backdrop-filter: blur(12px);
+    }
+    .meta-label { color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+    .meta-value { margin-top: 8px; color: #e9f1ff; font-size: 15px; font-weight: 650; }
+    .terminal-card {
+      overflow: hidden; border: 1px solid rgba(111, 143, 190, .23); border-radius: 18px;
+      background: rgba(8, 13, 24, .92); box-shadow: 0 24px 80px rgba(0, 0, 0, .3);
+    }
+    .terminal-head {
+      min-height: 54px; display: flex; align-items: center; justify-content: space-between;
+      gap: 14px; padding: 0 18px; border-bottom: 1px solid var(--line);
+      background: rgba(20, 31, 50, .72);
+    }
+    .terminal-title { display: flex; align-items: center; gap: 11px; font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+    .traffic { display: flex; gap: 6px; }
+    .traffic i { width: 8px; height: 8px; border-radius: 50%; background: #f87171; }
+    .traffic i:nth-child(2) { background: #fbbf24; }
+    .traffic i:nth-child(3) { background: #4ade80; }
+    .terminal-tag { color: var(--muted); font: 10px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .terminal-body { min-height: 196px; padding: 8px; background: linear-gradient(145deg, rgba(12, 20, 35, .7), rgba(5, 10, 19, .95)); }
+    #console {
+      width: 100%; min-height: 180px; max-height: 35vh; margin: 0; padding: 17px;
+      overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere;
+      color: #c6d2e4; background: transparent;
+      font: 12px/1.75 "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      scrollbar-width: thin; scrollbar-color: #31415b transparent;
+    }
+    .terminal-foot {
+      display: flex; justify-content: space-between; gap: 12px; padding: 11px 18px;
+      border-top: 1px solid var(--line); color: #708099; font-size: 10px;
+      letter-spacing: .08em; text-transform: uppercase;
+    }
+    .footer { padding: 22px 4px 0; color: #66758d; text-align: center; font-size: 11px; }
+    @media (max-width: 640px) {
+      body { padding: 22px 14px; }
+      .topbar { align-items: flex-start; }
+      .top-status { padding: 8px 10px; font-size: 10px; }
+      .meta-grid { grid-template-columns: 1fr; gap: 9px; margin-top: 21px; }
+      .meta-card { padding: 13px 15px; }
+      .meta-value { margin-top: 5px; }
+      .terminal-body { min-height: 170px; padding: 5px; }
+      #console { min-height: 155px; max-height: 35vh; padding: 13px; font-size: 11px; }
+      .terminal-foot { font-size: 9px; }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .brand-mark { animation: glow 4s ease-in-out infinite; }
+      @keyframes glow { 50% { box-shadow: 0 0 34px rgba(66, 232, 224, .2); } }
+    }
+  </style>
+  <script src="src/main.js" defer></script>
+  <!-- Preserve the existing offline-cache redirect when Application Cache is available. -->
+  <script>
+    if (window.applicationCache && window.applicationCache.status === 0) {
+      window.location.replace("cache.html");
+    }
+  </script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">W</div>
+        <div>
+          <p class="brand-name">WOBKOT EXPLOIT</p>
+          <p class="brand-sub">Console utility interface</p>
+        </div>
+      </div>
+      <div class="top-status"><span class="dot" aria-hidden="true"></span> HOST INTERFACE READY</div>
+    </header>
+
+    <section class="hero" aria-labelledby="page-title">
+      <div class="eyebrow">PLAYSTATION 4 · EXPLOIT HOST V1.0 BY REZA</div>
+      <h1 id="page-title">System <span>Console</span></h1>
+      <p class="intro">Wobkot exploit host interface for supported PS4 firmware. Runtime output and process messages will appear in the console below.</p>
+    </section>
+
+    <section class="meta-grid" aria-label="Host information">
+      <div class="meta-card">
+        <div class="meta-label">Platform</div>
+        <div class="meta-value">PlayStation 4</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-label">Firmware range</div>
+        <div class="meta-value">9.00 — 12.02</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-label">Output</div>
+        <div class="meta-value">Live runtime console</div>
+      </div>
+    </section>
+
+    <section class="terminal-card" aria-label="Runtime console">
+      <div class="terminal-head">
+        <div class="terminal-title">
+          <span class="traffic" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>EXECUTION LOG</span>
+        </div>
+        <span class="terminal-tag">WOBKOT / SYSTEM</span>
+      </div>
+      <div class="terminal-body">
+        <pre id="console" aria-live="polite"></pre>
+      </div>
+      <div class="terminal-foot">
+        <span>● Console output</span>
+        <span>Keep this page open while running</span>
+      </div>
+    </section>
+
+    <footer class="footer">Wobkot PS4 Exploit Host · Interface refresh</footer>
+  </main>
+</body>
 </html>

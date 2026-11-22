@@ -1,0 +1,22 @@
+CACHE MANIFEST
+# v1
+# Generated on 2026-11-23 10:20:29.924200
+
+CACHE:
+cache.html
+style.css
+index.html
+src/userland.js
+src/kernel.js
+src/worker.js
+src/lapse.js
+src/misc.js
+src/thread.js
+src/main.js
+src/ps4/impl.js
+src/ps4/payload.bin
+src/ps5/relapse.js
+src/ps5/impl.js
+
+NETWORK:
+*
