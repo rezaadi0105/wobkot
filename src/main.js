@@ -44,6 +44,7 @@ window.onunhandledrejection = function (event) {
   }
 
   logger.error(msg);
+  logger.info('Exploit failed, shutdown your console then try again !!');
 };
 
 function load_script(src) {
