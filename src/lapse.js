@@ -1200,11 +1200,6 @@ async function exploit_main() {
 
     logger.info('Corrupted context cleanup completed !!');
   } finally {
-    try {
-      cleanup();
-    } catch (cleanup_err) {
-      logger.error(`Unable to cleanup: ${cleanup_err}`);
-    }
   }
 
   logger.info('===END===');
